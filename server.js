@@ -30,7 +30,24 @@ app.get('/location', (request, response) => {
     theDataOjbFromJson.lat,
     theDataOjbFromJson.lon
   );
+
   response.send(newLocation);
+
+});
+
+app.get('/weather', (request, response) => {
+  const theDataArrayFromTheWeatherJson = require('./data/weather.json');
+  const theDataOjbFromJson = theDataArrayFromTheWeatherJson.data[0];
+
+  const searchedCity = request.query.city;
+
+  const newWeather = new Weather (
+    searchedCity,
+    theDataOjbFromJson.weather.description,
+    theDataOjbFromJson.datetime
+  );
+
+  response.send(newWeather);
 
 });
 
@@ -45,3 +62,7 @@ function Location(searchedCity, display_name, lat, lon) { //<<--this is saying t
   this.longitude = parseFloat(lon);
 }
 
+function Weather(weather, datetime) {
+  this.forecast = weather;
+  this.time = datetime;
+}
