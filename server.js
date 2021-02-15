@@ -39,7 +39,7 @@ app.get('/weather', (request, response) => {
   const theDataArrayFromTheWeatherJson = require('./data/weather.json');
   const theDataOjbFromJson = theDataArrayFromTheWeatherJson.data[0];
 
-  const searchedCity = request.query.city;
+  //   const searchedCity = request.query.city;
 
   const newWeather = new Weather (
     // searchedCity,
@@ -52,6 +52,30 @@ app.get('/weather', (request, response) => {
 });
 
 app.use('*', (request, response) => response.send('Sorry, that route does not exist.'));
+
+//Has to be after stuff loads too
+app.use(notFoundHandler);
+
+//Has to be after stuff loads
+app.use(errorHandler);
+
+//client goes here
+
+
+function errorHandler(error, request, response, next) {
+  console.error(error);
+  response.status(500).json({
+    error: true,
+    message: error.message,
+  });
+}
+
+function notFoundHandler(request, response) {
+  response.status(404).json({
+    notFound: true,
+  });
+}
+
 
 app.listen(PORT,() => console.log(`Listening on port ${PORT}`));
 
