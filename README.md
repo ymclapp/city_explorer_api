@@ -3,9 +3,9 @@ The second round of 301 City Explorer app
 
 Number and name of feature: Begin building CE api
 
-Estimate of time needed to complete: _____
+Estimate of time needed to complete: 3 hours
 
-Start time: _____
+Start time: Noon
 
 Finish time: _____
 
@@ -13,22 +13,25 @@ Actual time needed to complete: _____
 
 # Project Name
 
-**Author**: Your Name Goes Here
-**Version**: 1.0.0 (increment the patch/fix version number if you make more commits past your first submission)
+**Author**: Yvette Clapp
+**Version**: 1.0.0 (inital commit)
 
 ## Overview
-<!-- Provide a high level overview of what this application is and why you are building it, beyond the fact that it's an assignment for this class. (i.e. What's your problem domain?) -->
+We are building an api to search for weather, map, restaurants, etc.
 
 ## Getting Started
-<!-- What are the steps that a user must take in order to build this app on their own machine and get it running? -->
+1)  Set up base file
+2)  Set up server
+3)  Set up Heroku
+4)  Set up client
+5)  Set up routes
+
 
 ## Architecture
 <!-- Provide a detailed description of the application design. What technologies (languages, libraries, etc) you're using, and any other relevant design information. -->
 
 ## Change Log
-<!-- Use this area to document the iterative changes made to your application as each feature is successfully implemented. Use time stamps. Here's an examples:
-
-01-01-2001 4:59pm - Application now has a fully-functional express server, with a GET route for the location resource.
+02-15-2021 - initial commit with base files and scaffolding
 
 ## Credits and Collaborations
 <!-- Give credit (and a link) to other people or resources that helped you build this application. -->
