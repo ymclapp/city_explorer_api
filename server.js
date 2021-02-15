@@ -42,9 +42,9 @@ app.get('/weather', (request, response) => {
   const searchedCity = request.query.city;
 
   const newWeather = new Weather (
-    searchedCity,
+    // searchedCity,
     theDataOjbFromJson.weather.description,
-    theDataOjbFromJson.datetime
+    theDataOjbFromJson.valid_date
   );
 
   response.send(newWeather);
@@ -62,7 +62,7 @@ function Location(searchedCity, display_name, lat, lon) { //<<--this is saying t
   this.longitude = parseFloat(lon);
 }
 
-function Weather(weather, datetime) {
+function Weather(weather, valid_date) {
   this.forecast = weather;
-  this.time = datetime;
+  this.time = valid_date;
 }
