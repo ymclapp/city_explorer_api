@@ -36,19 +36,28 @@ app.get('/location', (request, response) => {
 });
 
 app.get('/weather', (request, response) => {
-  const theDataArrayFromTheWeatherJson = require('./data/weather.json');
-  const theDataOjbFromJson = theDataArrayFromTheWeatherJson.data[0];
+//   const theDataArrayFromTheWeatherJson = require('./data/weather.json');
+//   const theDataOjbFromJson = theDataArrayFromTheWeatherJson.data[0];
 
-  //   const searchedCity = request.query.city;
+//   //   const searchedCity = request.query.city;
 
-  const newWeather = new Weather (
-    // searchedCity,
-    theDataOjbFromJson.weather.description,
-    theDataOjbFromJson.valid_date
-  );
+//   const newWeather = new Weather (
+//     // searchedCity,
+//     theDataOjbFromJson.weather.description,
+//     theDataOjbFromJson.valid_date
+//   );
 
-  response.send(newWeather);
+//   response.send(newWeather);
 
+// });
+
+  const weatherData = require('./data/weather.json');
+  const weatherResults = [];  //<<--for returning an array of information
+  weatherData.data.forEach(dailyWeather => {
+    weatherResults.push(new Weather(dailyWeather));
+  });
+  // const weather = new Weather(weatherData);
+  response.send(weatherResults);
 });
 
 app.use('*', (request, response) => response.send('Sorry, that route does not exist.'));
@@ -86,7 +95,7 @@ function Location(searchedCity, display_name, lat, lon) { //<<--this is saying t
   this.longitude = parseFloat(lon);
 }
 
-function Weather(weather, valid_date) {
-  this.forecast = weather;
-  this.time = valid_date;
+function Weather(weatherData) {
+  this.forecast = weatherData.weather.description;
+  this.time = weatherData.valid_date;
 }
