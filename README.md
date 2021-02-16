@@ -25,6 +25,8 @@ We are building an api to search for weather, map, restaurants, etc.
 3)  Set up Heroku
 4)  Set up client
 5)  Set up routes
+6)  Set up the api
+7)  Load the correct apps and require
 
 
 ## Architecture
@@ -36,3 +38,22 @@ We are building an api to search for weather, map, restaurants, etc.
 ## Credits and Collaborations
 <!-- Give credit (and a link) to other people or resources that helped you build this application. -->
 -->
+
+Number and name of feature: weather refactor
+
+Estimate of time needed to complete: 2 hours
+
+Start time: 11am
+Finish time: 11:45am
+
+Actual time needed to complete: 45 minutes
+
+Number and name of feature: location info from api
+
+Estimate of time needed to complete: 2 hours
+
+Start time: 12:08pm
+
+Finish time: _____
+
+Actual time needed to complete: _____
