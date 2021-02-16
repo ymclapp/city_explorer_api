@@ -41,6 +41,7 @@ app.get('/', (request, response) => {
 
 app.get('/location', locationHandler);
 app.get('/weather', weatherHandler);
+app.get('/parks', parksHandler);
 
 function locationHandler(request, response) {  //<<this handler works
   if (!process.env.GEOCODE_API_KEY) throw 'GEO_KEY not found';
@@ -74,10 +75,9 @@ function locationHandler(request, response) {  //<<this handler works
 //   response.send(weatherResults);
 // });
 
-function weatherHandler(request, response) {  //<<--this handler works
-  const city = request.query.search_query;  //<<--removing this and hardcoding the city name (ex. 'reno') worked, trying other, non-hardcoded ways
+function weatherHandler(request, response) {
+  const city = request.query.search_query;
   const url = 'https://api.weatherbit.io/v2.0/forecast/daily';
-  
 
   superagent.get(url)
     .query({
@@ -93,6 +93,34 @@ function weatherHandler(request, response) {  //<<--this handler works
         return new Weather(dailyWeather);
       })
       response.send(dailyResults);
+    })
+
+    .catch(err => {
+      console.log(err);
+      errorHandler(err, request, response);
+    });
+}
+
+function parksHandler(request, response) {
+  // const state_code = response.query.state_code;  
+  const url = 'https://developer.nps.gov/api/v0/parks';
+
+
+  superagent.get(url)
+    .query({
+      // q: 'parks?',
+      stateCode: 'ID',//hard coded state code for the moment
+      api_key: process.env.PARKS_API_KEY
+    })
+
+    .then(parksResponse => {
+      let parksData = parksResponse.body; //this is what comes back from API in json
+      console.log(parksData);
+
+      let parksResults = parksData.data.map(eachPark => {
+        return new Parks (eachPark);
+      })
+      response.send(parksResults);
     })
 
     .catch(err => {
@@ -151,4 +179,12 @@ function Location(city, geoData) { //<<--this is saying that it needs city and g
 function Weather(weatherData) {
   this.forecast = weatherData.weather.description;
   this.time = weatherData.datetime;
+}
+
+function Parks (parksData) {
+  this.parks_url = parksData.url;
+  this.name = parksData.fullName;
+  this.address = parksData.addresses;
+  this.fee = parksData.entranceFees.cost;
+  this.description = parksData.description;
 }
