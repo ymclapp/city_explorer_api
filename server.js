@@ -40,6 +40,7 @@ app.get('/', (request, response) => {
 // });
 
 app.get('/location', locationHandler);
+app.get('/weather', weatherHandler);
 
 function locationHandler(request, response) {  //<<this handler works
   if (!process.env.GEOCODE_API_KEY) throw 'GEO_KEY not found';
@@ -63,15 +64,42 @@ function locationHandler(request, response) {  //<<this handler works
     });
 }
 
-app.get('/weather', (request, response) => {
-  const weatherData = require('./data/weather.json');
-  const weatherResults = [];  //<<--for returning an array of information
-  weatherData.data.forEach(dailyWeather => {
-    weatherResults.push(new Weather(dailyWeather));
-  });
-  // const weather = new Weather(weatherData);
-  response.send(weatherResults);
-});
+// app.get('/weather', (request, response) => {
+//   const weatherData = require('./data/weather.json');
+//   const weatherResults = [];  //<<--for returning an array of information
+//   weatherData.data.forEach(dailyWeather => {
+//     weatherResults.push(new Weather(dailyWeather));
+//   });
+//   // const weather = new Weather(weatherData);
+//   response.send(weatherResults);
+// });
+
+function weatherHandler(request, response) {  //<<--this handler works
+  const city = request.query.search_query;  //<<--removing this and hardcoding the city name (ex. 'reno') worked, trying other, non-hardcoded ways
+  const url = 'https://api.weatherbit.io/v2.0/forecast/daily';
+  
+
+  superagent.get(url)
+    .query({
+      city: city,
+      key: process.env.WEATHER_API_KEY,
+      days: 4
+    })
+    .then(weatherResponse => {
+      let weatherData = weatherResponse.body; //this is what comes back from API in json
+      console.log(weatherData);
+
+      let dailyResults = weatherData.data.map(dailyWeather => {
+        return new Weather(dailyWeather);
+      })
+      response.send(dailyResults);
+    })
+
+    .catch(err => {
+      console.log(err);
+      errorHandler(err, request, response);
+    });
+}
 
 app.use('*', (request, response) => response.send('Sorry, that route does not exist.'));
 
@@ -115,7 +143,12 @@ function Location(city, geoData) { //<<--this is saying that it needs city and g
   this.longitude = parseFloat(geoData[0].lon);
 }
 
+// function Weather(weatherData) {
+//   this.forecast = weatherData.weather.description;
+//   this.time = weatherData.valid_date;
+// }
+
 function Weather(weatherData) {
   this.forecast = weatherData.weather.description;
-  this.time = weatherData.valid_date;
+  this.time = weatherData.datetime;
 }
