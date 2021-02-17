@@ -107,7 +107,7 @@ Actual time needed to complete: 42 minutes
 
 Number and name of feature: Feature #3 Deploy
 
-Estimate of time needed to complete: _____
+Estimate of time needed to complete: 1 hour
 
 Start time: _____
 
@@ -118,11 +118,11 @@ Actual time needed to complete: _____
 
 Number and name of feature: Feature #4 Stretch
 
-Estimate of time needed to complete: _____
+Estimate of time needed to complete: I completed this with feature #2
 
-Start time: _____
+Start time: 1:30pm
 
-Finish time: _____
+Finish time: 2:12pm
 
-Actual time needed to complete: _____
+Actual time needed to complete: part of the 42 minutes for the feature 2
 
