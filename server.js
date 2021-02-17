@@ -7,8 +7,10 @@ const express = require('express');
 const app = express();
 
 const pg = require('pg');
+
 const client = new pg.Client(process.env.DATABASE_URL);
 client.on('error', err => console.error(err));
+
 const superagent = require('superagent');
 
 const cors = require('cors');
@@ -43,6 +45,8 @@ app.get('/', (request, response) => {
 app.get('/location', locationHandler);
 app.get('/weather', weatherHandler);
 app.get('/parks', parksHandler);
+app.get('/yelp', yelpHandler);
+app.get('/movies', moviesHandler);
 
 // function locationHandler(request, response) {  //<<this handler works
 //   if (!process.env.GEOCODE_API_KEY) throw 'GEO_KEY not found';
@@ -76,6 +80,8 @@ app.get('/parks', parksHandler);
 //   response.send(weatherResults);
 // });
 
+//weather
+
 function weatherHandler(request, response) {
   const city = request.query.search_query;
   const url = 'https://api.weatherbit.io/v2.0/forecast/daily';
@@ -101,7 +107,7 @@ function weatherHandler(request, response) {
       errorHandler(err, request, response);
     });
 }
-
+//parks
 
 function parksHandler(request, response) {
   // const state_code = response.query.state_code;  
@@ -120,7 +126,7 @@ function parksHandler(request, response) {
       console.log(parksData);
 
       let parksResults = parksData.data.map(eachPark => {
-        return new Parks (eachPark);
+        return new Parks(eachPark);
       })
       response.send(parksResults);
     })
@@ -131,6 +137,8 @@ function parksHandler(request, response) {
     });
 }
 
+//location
+
 function getLocationFromCache(city) {  //<<--this is the function for using the database to cache
   const SQL = `  --<<--these are tic marks not single quotes
     SELECT * 
@@ -139,10 +147,10 @@ function getLocationFromCache(city) {  //<<--this is the function for using the 
     LIMIT 1  --<<--brings back only one of the rows for that city
     `;
   const parameters = [city];
-  
+
   return client.query(SQL, parameters);
 }
-  
+
 function setLocationInCache(location) {  //<<--this is a function for using the database to cache
   const { search_query, formatted_query, latitude, longitude } = location
   const SQL = `  --<<--these are tic marks not single quotes
@@ -151,7 +159,7 @@ function setLocationInCache(location) {  //<<--this is a function for using the 
     RETURNING *
     `;
   const parameters = [search_query, formatted_query, latitude, longitude];
-  
+
   return client.query(SQL, parameters)  //<<super duper common error - promisey stuff inside of a function, return a promise that says we're done
     .then(result => {
       console.log('Cache Location', result);
@@ -163,13 +171,13 @@ function setLocationInCache(location) {  //<<--this is a function for using the 
 
 function locationHandler(request, response) {  //<<this handler works
   if (!process.env.GEOCODE_API_KEY) throw 'GEO_KEY not found';
-  
+
   const city = request.query.city;
-  
+
   getLocationFromCache(city)
     .then(result => {
       console.log('Location from cache', result.rows)
-      let { rowCount, rows} = result;
+      let { rowCount, rows } = result;
       if (rowCount > 0) {
         response.send(rows[0]);
       }
@@ -191,21 +199,83 @@ function getLocationFromAPI(city, response) {
     .then(locationResponse => {
       let geoData = locationResponse.body;
       // console.log(geoData);
-  
+
       const location = new Location(city, geoData);
-  
+
       setLocationInCache(location)  //<<--if we don't already have it, then save it too, BUT wait to find out and .then set
         .then(() => {
           console.log('Location has been cached', location);
           response.send(location);
         });
-  
+
     })
     .catch(err => {
       console.log(err);
       errorHandler(err, request, response);
     });
 }
+
+//yelp
+
+function yelpHandler(request, response) {//<<--this handler works
+  console.log(request.query);
+  const lat = request.query.latitude;
+  const lon = request.query.longitude;
+  const restaurants = request.query.restaurants;
+  const url = 'https://api.yelp.com/v3/businesses/search';
+
+  superagent.get(url)
+    .set('Authorization', 'Bearer ' + process.env.YELP_KEY)  //<<'Authorization is the name that yelp is requiring and "bearer" with the key included is the value.  Per yelp API directions:  "To authenticate API calls with the API Key, set the Authorization HTTP header value as Bearer API_KEY".  https://www.yelp.com/developers/documentation/v3/authentication
+    .query({
+      latitude: lat,
+      longitude: lon,
+      category: restaurants
+    })
+
+    .then(yelpResponse => {
+      let yelpData = yelpResponse.body; //this is what comes back from API in json
+      let yelpResults = yelpData.businesses.map(allRestaurants => {
+        return new Restaurant(allRestaurants);
+      })
+      response.send(yelpResults);
+    })
+
+    .catch(err => {
+      console.log(err);
+      errorHandler(err, request, response);
+    });
+}
+
+//movies
+
+function moviesHandler(request, response) {//<<--this handler works
+  console.log(request.query);
+  // const lat = request.query.latitude;
+  // const lon = request.query.longitude;
+  // const restaurants = request.query.restaurants;
+  const url = 'https://api.themoviedb.org/3/movie/now_playing';
+
+  superagent.get(url)
+    .query({
+      api_key: process.env.MOVIES_API_KEY,
+      page: 1,
+      region: 'iso_3166_1'
+    })
+
+    .then(moviesResponse => {
+      let moviesData = moviesResponse.body; //this is what comes back from API in json
+      let moviesResults = moviesData.businesses.map(allMovies => {
+        return new Movies(allMovies);
+      })
+      response.send(moviesResults);
+    })
+
+    .catch(err => {
+      console.log(err);
+      errorHandler(err, request, response);
+    });
+}
+
 
 
 app.use('*', (request, response) => response.send('Sorry, that route does not exist.'));
@@ -268,10 +338,29 @@ function Weather(weatherData) {
   this.time = weatherData.datetime;
 }
 
-function Parks (parksData) {
+function Parks(parksData) {
   this.parks_url = parksData.url;
   this.name = parksData.fullName;
   this.address = parksData.addresses;
   this.fee = parksData.entranceFees.cost;
   this.description = parksData.description;
+}
+
+
+function Restaurant(yelpData) {
+  this.name = yelpData.name;
+  this.image_url = yelpData.image_url;
+  this.rating = yelpData.rating;
+  this.url = yelpData.url;
+  this.price = yelpData.price;
+}
+
+function Movies(moviesData) {
+  this.title = moviesData.title;
+  this.released_on = moviesData.release_date;
+  this.total_votes = moviesData.vote_counts;
+  this.popularity = moviesData.popularity;
+  this.average_votes = moviesData.vote_average;
+  this.image_url = moviesData.poster_path;
+  this.overview = moviesData.overview;
 }
