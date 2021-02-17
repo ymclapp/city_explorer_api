@@ -110,7 +110,7 @@ function weatherHandler(request, response) {
 //parks
 
 function parksHandler(request, response) {
-  // const state_code = response.query.state_code;  
+  // const state_code = response.query.state_code;
   const url = 'https://developer.nps.gov/api/v1/parks';
 
 
@@ -139,7 +139,7 @@ function parksHandler(request, response) {
 
 //location
 
-function getLocationFromCache(city) {  //<<--this is the function for using the database to cache
+function getLocationFromCache(city) { //<<--this is the function for using the database to cache
   const SQL = `  --<<--these are tic marks not single quotes
     SELECT * 
     FROM location2
@@ -151,7 +151,7 @@ function getLocationFromCache(city) {  //<<--this is the function for using the 
   return client.query(SQL, parameters);
 }
 
-function setLocationInCache(location) {  //<<--this is a function for using the database to cache
+function setLocationInCache(location) { //<<--this is a function for using the database to cache
   const { search_query, formatted_query, latitude, longitude } = location
   const SQL = `  --<<--these are tic marks not single quotes
     INSERT INTO location2 (search_query, formatted_query, latitude, longitude)--<<--location2 is the name of the database
@@ -160,7 +160,7 @@ function setLocationInCache(location) {  //<<--this is a function for using the 
     `;
   const parameters = [search_query, formatted_query, latitude, longitude];
 
-  return client.query(SQL, parameters)  //<<super duper common error - promisey stuff inside of a function, return a promise that says we're done
+  return client.query(SQL, parameters) //<<super duper common error - promisey stuff inside of a function, return a promise that says we're done
     .then(result => {
       console.log('Cache Location', result);
     })
@@ -169,7 +169,7 @@ function setLocationInCache(location) {  //<<--this is a function for using the 
     })
 }
 
-function locationHandler(request, response) {  //<<this handler works
+function locationHandler(request, response) { //<<this handler works
   if (!process.env.GEOCODE_API_KEY) throw 'GEO_KEY not found';
 
   const city = request.query.city;
@@ -182,7 +182,7 @@ function locationHandler(request, response) {  //<<this handler works
         response.send(rows[0]);
       }
       else {
-        return getLocationFromAPI(city, response);  //<<--have to pass the response so that it will get picked up by the getLocationFromAPI response.send(location)
+        return getLocationFromAPI(city, response); //<<--have to pass the response so that it will get picked up by the getLocationFromAPI response.send(location)
       }
     })
 }
@@ -202,7 +202,7 @@ function getLocationFromAPI(city, response) {
 
       const location = new Location(city, geoData);
 
-      setLocationInCache(location)  //<<--if we don't already have it, then save it too, BUT wait to find out and .then set
+      setLocationInCache(location) //<<--if we don't already have it, then save it too, BUT wait to find out and .then set
         .then(() => {
           console.log('Location has been cached', location);
           response.send(location);
@@ -225,7 +225,7 @@ function yelpHandler(request, response) {//<<--this handler works
   const url = 'https://api.yelp.com/v3/businesses/search';
 
   superagent.get(url)
-    .set('Authorization', 'Bearer ' + process.env.YELP_KEY)  //<<'Authorization is the name that yelp is requiring and "bearer" with the key included is the value.  Per yelp API directions:  "To authenticate API calls with the API Key, set the Authorization HTTP header value as Bearer API_KEY".  https://www.yelp.com/developers/documentation/v3/authentication
+    .set('Authorization', 'Bearer ' + process.env.YELP_KEY) //<<'Authorization is the name that yelp is requiring and "bearer" with the key included is the value.  Per yelp API directions:  "To authenticate API calls with the API Key, set the Authorization HTTP header value as Bearer API_KEY".  https://www.yelp.com/developers/documentation/v3/authentication
     .query({
       latitude: lat,
       longitude: lon,
@@ -264,7 +264,7 @@ function moviesHandler(request, response) {//<<--this handler works
 
     .then(moviesResponse => {
       let moviesData = moviesResponse.body; //this is what comes back from API in json
-      let moviesResults = moviesData.businesses.map(allMovies => {
+      let moviesResults = moviesData.results.map(allMovies => {
         return new Movies(allMovies);
       })
       response.send(moviesResults);
@@ -304,14 +304,14 @@ function notFoundHandler(request, response) {
 }
 
 
-client.connect()  //<<--keep in server.js
+client.connect() //<<--keep in server.js
   .then(() => {
     console.log('PG connected!');
 
     app.listen(PORT, () => console.log(`App is listening on ${PORT}`)); //<<--these are tics not single quotes
   })
   .catch(err => {
-    throw `PG error!:  ${err.message}`  //<<--these are tics not single quotes
+    throw `PG error!:  ${err.message}` //<<--these are tics not single quotes
   });
 
 // function Location(searchedCity, display_name, lat, lon) { //<<--this is saying that it needs city and geoData to be able to run the constructor
