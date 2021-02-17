@@ -82,3 +82,47 @@ Finish time: _____
 
 Actual time needed to complete: Still not complete, but worked on for 4.5 hours
 
+
+Number and name of feature: Feature #1 Database
+
+Estimate of time needed to complete: 1 hours
+
+Start time: 11:30am
+
+Finish time: 12:30pm
+
+Actual time needed to complete: 1 hour
+
+
+Number and name of feature: Feature #2 Server
+
+Estimate of time needed to complete: 1 hour using my already created info
+
+Start time: 1:30pm
+
+Finish time: 2:12pm
+
+Actual time needed to complete: 42 minutes
+
+
+Number and name of feature: Feature #3 Deploy
+
+Estimate of time needed to complete: _____
+
+Start time: _____
+
+Finish time: _____
+
+Actual time needed to complete: _____
+
+
+Number and name of feature: Feature #4 Stretch
+
+Estimate of time needed to complete: _____
+
+Start time: _____
+
+Finish time: _____
+
+Actual time needed to complete: _____
+
