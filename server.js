@@ -103,7 +103,7 @@ function weatherHandler(request, response) {
 
 function parksHandler(request, response) {
   // const state_code = response.query.state_code;  
-  const url = 'https://developer.nps.gov/api/v0/parks';
+  const url = 'https://developer.nps.gov/api/v1/parks';
 
 
   superagent.get(url)
