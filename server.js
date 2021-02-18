@@ -7,6 +7,7 @@ const express = require('express');
 const app = express();
 
 const pg = require('pg');
+pg.defaults.ssl=!!process.env.DATABASE_SSL;
 
 const client = new pg.Client(process.env.DATABASE_URL);
 client.on('error', err => console.error(err));
@@ -110,7 +111,7 @@ function weatherHandler(request, response) {
 //parks
 
 function parksHandler(request, response) {
-  // const state_code = response.query.state_code;
+  // const stateCode = weatherData.state_code;
   const url = 'https://developer.nps.gov/api/v1/parks';
 
 
