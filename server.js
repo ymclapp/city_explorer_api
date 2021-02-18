@@ -26,65 +26,17 @@ app.get('/', (request, response) => {
   response.send('You have found the home page! ');
 });
 
-// app.get('/location', (request, response) => {
-//   const theDataArrayFromTheLocationJson = require('./data/location.json');
-//   const theDataOjbFromJson = theDataArrayFromTheLocationJson[0];
-
-//   const searchedCity = request.query.city;
-
-//   const newLocation = new Location (
-//     searchedCity,
-//     theDataOjbFromJson.display_name,
-//     theDataOjbFromJson.lat,
-//     theDataOjbFromJson.lon
-//   );
-
-//   response.send(newLocation);
-
-// });
 
 app.get('/location', locationHandler);
 app.get('/weather', weatherHandler);
 app.get('/parks', parksHandler);
 app.get('/yelp', yelpHandler);
-// app.get('/movies', moviesHandler);
+app.get('/movies', moviesHandler);
 
-// function locationHandler(request, response) {  //<<this handler works
-//   if (!process.env.GEOCODE_API_KEY) throw 'GEO_KEY not found';
-//   const city = request.query.city;
-//   const url = 'https://us1.locationiq.com/v1/search.php';
-//   superagent.get(url)
-//     .query({
-//       key: process.env.GEOCODE_API_KEY,
-//       q: city,
-//       format: 'json'
-//     })
-//     .then(locationResponse => {
-//       let geoData = locationResponse.body;
-//       console.log(geoData);
-//       const location = new Location(city, geoData);
-//       response.send(location);
-//     })
-//     .catch(err => {
-//       console.log(err);
-//       errorHandler(err, request, response);
-//     });
-// }
-
-// app.get('/weather', (request, response) => {
-//   const weatherData = require('./data/weather.json');
-//   const weatherResults = [];  //<<--for returning an array of information
-//   weatherData.data.forEach(dailyWeather => {
-//     weatherResults.push(new Weather(dailyWeather));
-//   });
-//   // const weather = new Weather(weatherData);
-//   response.send(weatherResults);
-// });
 
 //weather
 
 function weatherHandler(request, response) {
-  console.log('oops');
   const city = request.query.search_query;
   const url = 'https://api.weatherbit.io/v2.0/forecast/daily';
 
@@ -113,13 +65,11 @@ function weatherHandler(request, response) {
 //parks
 
 function parksHandler(request, response) {
-  // const stateCode = weatherData.state_code;
   const url = 'https://developer.nps.gov/api/v1/parks';
 
 
   superagent.get(url)
     .query({
-      // q: 'parks?',
       stateCode: 'ID',//hard coded state code for the moment
       api_key: process.env.PARKS_API_KEY
     })
@@ -251,33 +201,33 @@ function yelpHandler(request, response) {//<<--this handler works
 
 //movies
 
-// function moviesHandler(request, response) {//<<--this handler works
-//   console.log(request.query);
-//   // const lat = request.query.latitude;
-//   // const lon = request.query.longitude;
-//   // const restaurants = request.query.restaurants;
-//   const url = 'https://api.themoviedb.org/3/movie/now_playing';
+function moviesHandler(request, response) {//<<--this handler works
+  console.log(request.query);
+  // const lat = request.query.latitude;
+  // const lon = request.query.longitude;
+  // const restaurants = request.query.restaurants;
+  const url = 'https://api.themoviedb.org/3/movie/now_playing';
 
-//   superagent.get(url)
-//     .query({
-//       api_key: process.env.MOVIES_API_KEY,
-//       page: 1,
-//       region: 'iso_3166_1'
-//     })
+  superagent.get(url)
+    .query({
+      api_key: process.env.MOVIES_API_KEY,
+      page: 1,
+      region: 'iso_3166_1'
+    })
 
-//     .then(moviesResponse => {
-//       let moviesData = moviesResponse.body; //this is what comes back from API in json
-//       let moviesResults = moviesData.results.map(allMovies => {
-//         return new Movies(allMovies);
-//       })
-//       response.send(moviesResults);
-//     })
+    .then(moviesResponse => {
+      let moviesData = moviesResponse.body; //this is what comes back from API in json
+      let moviesResults = moviesData.results.map(allMovies => {
+        return new Movies(allMovies);
+      })
+      response.send(moviesResults);
+    })
 
-//     .catch(err => {
-//       console.log(err);
-//       errorHandler(err, request, response);
-//     });
-// }
+    .catch(err => {
+      console.log(err);
+      errorHandler(err, request, response);
+    });
+}
 
 
 
@@ -317,24 +267,12 @@ client.connect() //<<--keep in server.js
     throw `PG error!:  ${err.message}` //<<--these are tics not single quotes
   });
 
-// function Location(searchedCity, display_name, lat, lon) { //<<--this is saying that it needs city and geoData to be able to run the constructor
-//   this.searchedCity = searchedCity;
-//   this.formatted_query = display_name;
-//   this.latitude = parseFloat(lat); //<<--used parseFloat because the info was a string and this will change to numbers
-//   this.longitude = parseFloat(lon);
-// }
-
 function Location(city, geoData) { //<<--this is saying that it needs city and geoData to be able to run the constructor
   this.search_query = city;
   this.formatted_query = geoData[0].display_name;
   this.latitude = parseFloat(geoData[0].lat); //<<--used parseFloat because the info was a string and this will change to numbers
   this.longitude = parseFloat(geoData[0].lon);
 }
-
-// function Weather(weatherData) {
-//   this.forecast = weatherData.weather.description;
-//   this.time = weatherData.valid_date;
-// }
 
 function Weather(weatherData) {
   this.forecast = weatherData.weather.description;
@@ -358,12 +296,12 @@ function Restaurant(yelpData) {
   this.price = yelpData.price;
 }
 
-// function Movies(moviesData) {
-//   this.title = moviesData.title;
-//   this.released_on = moviesData.release_date;
-//   this.total_votes = moviesData.vote_counts;
-//   this.popularity = moviesData.popularity;
-//   this.average_votes = moviesData.vote_average;
-//   this.image_url = moviesData.poster_path;
-//   this.overview = moviesData.overview;
-// }
+function Movies(moviesData) {
+  this.title = moviesData.title;
+  this.released_on = moviesData.release_date;
+  this.total_votes = moviesData.vote_counts;
+  this.popularity = moviesData.popularity;
+  this.average_votes = moviesData.vote_average;
+  this.image_url = moviesData.poster_path;
+  this.overview = moviesData.overview;
+}
