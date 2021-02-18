@@ -80,7 +80,7 @@ Start time: _____
 
 Finish time: _____
 
-Actual time needed to complete: Still not complete, but worked on for 4.5 hours
+Actual time needed to complete: Still not complete, but worked on for 4.5 hours - 02/17 - still working on to get state code to work, fees, and addresses
 
 
 Number and name of feature: Feature #1 Database
