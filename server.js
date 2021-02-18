@@ -7,12 +7,9 @@ const express = require('express');
 const app = express();
 
 const pg = require('pg');
-pg.defaults.ssl=!!process.env.DATABASE_SSL;
+pg.defaults.ssl=process.env.NODE_ENV === 'production' && { rejectUnauthorized: false };
 
-const client = new pg.Client({
-  connectionString: process.env.DATABASE_URL,
-  ssl: process.env.DATABASE_SSL && { rejectUnauthorized: false }
-});
+const client = new pg.Client(process.env.DATABASE_URL);
 client.on('error', err => console.error(err));
 
 const superagent = require('superagent');
