@@ -46,7 +46,7 @@ app.get('/location', locationHandler);
 app.get('/weather', weatherHandler);
 app.get('/parks', parksHandler);
 app.get('/yelp', yelpHandler);
-app.get('/movies', moviesHandler);
+// app.get('/movies', moviesHandler);
 
 // function locationHandler(request, response) {  //<<this handler works
 //   if (!process.env.GEOCODE_API_KEY) throw 'GEO_KEY not found';
@@ -198,7 +198,7 @@ function getLocationFromAPI(city, response) {
     })
     .then(locationResponse => {
       let geoData = locationResponse.body;
-      // console.log(geoData);
+      console.log(geoData);
 
       const location = new Location(city, geoData);
 
@@ -248,33 +248,33 @@ function yelpHandler(request, response) {//<<--this handler works
 
 //movies
 
-function moviesHandler(request, response) {//<<--this handler works
-  console.log(request.query);
-  // const lat = request.query.latitude;
-  // const lon = request.query.longitude;
-  // const restaurants = request.query.restaurants;
-  const url = 'https://api.themoviedb.org/3/movie/now_playing';
+// function moviesHandler(request, response) {//<<--this handler works
+//   console.log(request.query);
+//   // const lat = request.query.latitude;
+//   // const lon = request.query.longitude;
+//   // const restaurants = request.query.restaurants;
+//   const url = 'https://api.themoviedb.org/3/movie/now_playing';
 
-  superagent.get(url)
-    .query({
-      api_key: process.env.MOVIES_API_KEY,
-      page: 1,
-      region: 'iso_3166_1'
-    })
+//   superagent.get(url)
+//     .query({
+//       api_key: process.env.MOVIES_API_KEY,
+//       page: 1,
+//       region: 'iso_3166_1'
+//     })
 
-    .then(moviesResponse => {
-      let moviesData = moviesResponse.body; //this is what comes back from API in json
-      let moviesResults = moviesData.results.map(allMovies => {
-        return new Movies(allMovies);
-      })
-      response.send(moviesResults);
-    })
+//     .then(moviesResponse => {
+//       let moviesData = moviesResponse.body; //this is what comes back from API in json
+//       let moviesResults = moviesData.results.map(allMovies => {
+//         return new Movies(allMovies);
+//       })
+//       response.send(moviesResults);
+//     })
 
-    .catch(err => {
-      console.log(err);
-      errorHandler(err, request, response);
-    });
-}
+//     .catch(err => {
+//       console.log(err);
+//       errorHandler(err, request, response);
+//     });
+// }
 
 
 
@@ -341,8 +341,8 @@ function Weather(weatherData) {
 function Parks(parksData) {
   this.parks_url = parksData.url;
   this.name = parksData.fullName;
-  this.address = parksData.addresses;
-  this.fee = parksData.entranceFees.cost;
+  this.address = `${parksData.addresses[0].line1} ${parksData.addresses[0].city} ${parksData.addresses[0].stateCode} ${parksData.addresses[0].postalCode}`;
+  this.fee = `${parksData.entranceFees[0].cost}`;
   this.description = parksData.description;
 }
 
@@ -355,12 +355,12 @@ function Restaurant(yelpData) {
   this.price = yelpData.price;
 }
 
-function Movies(moviesData) {
-  this.title = moviesData.title;
-  this.released_on = moviesData.release_date;
-  this.total_votes = moviesData.vote_counts;
-  this.popularity = moviesData.popularity;
-  this.average_votes = moviesData.vote_average;
-  this.image_url = moviesData.poster_path;
-  this.overview = moviesData.overview;
-}
+// function Movies(moviesData) {
+//   this.title = moviesData.title;
+//   this.released_on = moviesData.release_date;
+//   this.total_votes = moviesData.vote_counts;
+//   this.popularity = moviesData.popularity;
+//   this.average_votes = moviesData.vote_average;
+//   this.image_url = moviesData.poster_path;
+//   this.overview = moviesData.overview;
+// }
