@@ -44,7 +44,7 @@ function weatherHandler(request, response) {
     .query({
       city: city,
       key: process.env.WEATHER_API_KEY,
-      days: 4
+      days: 8
     })
     .then(weatherResponse => {
       let weatherData = weatherResponse.body; //this is what comes back from API in json
@@ -171,10 +171,11 @@ function getLocationFromAPI(city, response) {
 //yelp
 
 function yelpHandler(request, response) {//<<--this handler works
-  console.log(request.query);
+  // console.log(request.query);
   const lat = request.query.latitude;
   const lon = request.query.longitude;
   const restaurants = request.query.restaurants;
+  const limit = 5;
   const url = 'https://api.yelp.com/v3/businesses/search';
 
   superagent.get(url)
@@ -182,7 +183,8 @@ function yelpHandler(request, response) {//<<--this handler works
     .query({
       latitude: lat,
       longitude: lon,
-      category: restaurants
+      category: restaurants,
+      limit: limit
     })
 
     .then(yelpResponse => {
@@ -202,7 +204,7 @@ function yelpHandler(request, response) {//<<--this handler works
 //movies
 
 function moviesHandler(request, response) {//<<--this handler works
-  console.log(request.query);
+  // console.log(request.query);
   // const lat = request.query.latitude;
   // const lon = request.query.longitude;
   // const restaurants = request.query.restaurants;
